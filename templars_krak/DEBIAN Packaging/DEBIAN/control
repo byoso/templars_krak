@@ -1,0 +1,10 @@
+Package: package_name
+Version: 1.0
+Section: python
+Priority: optional
+Architecture: all
+Depends: [my dependencies]
+Maintainer: First_name Last_name <email@email.com>
+Description: Some description
+Homepage: [url address]
+info: [not shure this is useful]

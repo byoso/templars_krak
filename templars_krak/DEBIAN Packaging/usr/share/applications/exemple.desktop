@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=GTK Dices
+Comment=J'ai encore oublié mes dés !
+Keywords=Dices dés dice jdr
+Exec=Dices_Gtk_Glade.py
+Icon=/usr/share/pixmaps/Gtk_dices-icon.png
+Terminal=false
+Type=Application
+Categories=Utility;Game
+Name[fr_FR]=exemple.desktop

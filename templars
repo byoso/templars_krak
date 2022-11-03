@@ -1,0 +1,54 @@
+#! /usr/bin/env python3
+# coding: utf-8
+
+import os
+from flamewok.cli import cli
+from flamewok import Form, check_type
+import shutil
+
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+KRAK = os.path.join(BASE_DIR, "templars_krak")
+templates_list = os.listdir(KRAK)
+
+templates = {}
+
+for i in range(1, len(templates_list)+1):
+    templates[i] = templates_list[i-1]
+
+form_index = Form([
+    ("index", "\nselect an index (0 to exit)",
+    lambda x: check_type(x, int) and int(x) <= len(templates_list))
+])
+
+
+def copy_template(template):
+    print(f"copy {template}...")
+    from_files = os.path.join(KRAK, template)
+    if os.path.isdir(from_files):
+        shutil.copytree(
+            from_files, os.path.join(os.getcwd(), template))
+    else:
+        shutil.copyfile(from_files, os.path.join(os.getcwd(), template))
+
+def get_template():
+    key = int(form_index.ask().index)
+    if key <= 0:
+        quit()
+    else:
+        return templates[key]
+
+
+def display_templates():
+    for key in templates:
+        print(f"{key}: {templates[key]}")
+    template = get_template()
+    copy_template(template)
+
+
+
+def main():
+    display_templates()
+
+
+display_templates()

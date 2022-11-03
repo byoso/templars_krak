@@ -46,9 +46,23 @@ def display_templates():
     copy_template(template)
 
 
+def open_krak():
+    os.system(f"xdg-open {KRAK}")
+
 
 def main():
     display_templates()
 
 
-display_templates()
+
+if __name__ == "__main__":
+
+    cli.route(
+        ("", main, "run -Templar's Krak- and let your templates rule !"),
+        (["-h", "--help"], cli.help, "display this help"),
+        ("open", open_krak, "open the templates's storage directory"),
+        "",
+        "ABOUT",
+        "github here:",
+        "https://github.com/byoso/templars_krak"
+    )

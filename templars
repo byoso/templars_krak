@@ -6,6 +6,29 @@ from flamewok.cli import cli
 from flamewok import Form, check_type
 import shutil
 
+"""
+Templars
+
+first:
+$ pip install flamewok
+
+then:
+- Copy this script in your ~/bin folder and create a ~/bin/templars_krak directory
+- put your templates in the templar's Krak
+- call this script from anywhere with '$ templars' and enjoy the time you win ;)
+
+read the help:
+
+$ templars --help
+
+"""
+
+filename = __file__.split("/")[-1]
+
+what_so = f"""
+'{filename}' is a tool that allows to use both folders and files as templates.
+
+"""
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 KRAK = os.path.join(BASE_DIR, "templars_krak")
@@ -16,14 +39,25 @@ templates = {}
 for i in range(1, len(templates_list)+1):
     templates[i] = templates_list[i-1]
 
+def valid_entry(x):
+    if not check_type(x.split(" ")[0], int):
+        return False
+    if len(x.split(" ")) > 2:
+        return False
+    if len(x.split(" ")) > 1:
+        if x.split(" ")[1] != ".":
+            return False
+    if int(x.split(" ")[0]) >len(templates_list):
+        return False
+    return True
+
 form_index = Form([
     ("index", "\nselect an index (0 to exit)",
-    lambda x: check_type(x, int) and int(x) <= len(templates_list))
+    lambda x: valid_entry(x))
 ])
 
 
 def copy_template(template):
-    print(f"copy {template}...")
     from_files = os.path.join(KRAK, template)
     if os.path.isdir(from_files):
         shutil.copytree(
@@ -31,19 +65,51 @@ def copy_template(template):
     else:
         shutil.copyfile(from_files, os.path.join(os.getcwd(), template))
 
-def get_template():
-    key = int(form_index.ask().index)
+
+def copy_deployed(template):
+    src = os.path.join(KRAK, template)
+    files = [os.path.join(KRAK, template, file) for file in os.listdir(src)]
+    for file in files:
+        print(file)
+        if os.path.isdir(file):
+            print("[DIR]")
+            shutil.copytree(
+                file, os.path.join(os.getcwd(), file.split("/")[-1]))
+        else:
+            print("[file]")
+            shutil.copyfile(file, os.path.join(os.getcwd(), file.split("/")[-1]))
+
+    print("DEPLOY")
+
+
+def display_template_form():
+    response = form_index.ask()
+    key = int(response.index.split(" ")[0])
+    if "." in response.index.split(" ")[0:]:
+        option = "."
+    else:
+        option = None
+
     if key <= 0:
         quit()
     else:
-        return templates[key]
+        return templates[key], option
 
 
 def display_templates():
     for key in templates:
-        print(f"{key}: {templates[key]}")
-    template = get_template()
-    copy_template(template)
+        description = f"{key:<3}: {templates[key]:<45}"
+        from_files = os.path.join(KRAK, templates[key])
+        if os.path.isdir(from_files):
+            description += f"{key:<3}[Directory, add a dot (.) to copy 'deployed']"
+        print(description)
+    template, option = display_template_form()
+    print(f"copy {template}...")
+    if os.path.isdir(os.path.join(KRAK, template)) and option == ".":
+        copy_deployed(template)
+    else:
+        copy_template(template)
+    print("Done.")
 
 
 def open_krak():
@@ -58,6 +124,7 @@ def main():
 if __name__ == "__main__":
 
     cli.route(
+        what_so,
         ("", main, "run -Templar's Krak- and let your templates rule !"),
         (["-h", "--help"], cli.help, "display this help"),
         ("open", open_krak, "open the templates's storage directory"),

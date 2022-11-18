@@ -98,11 +98,13 @@ def display_template_form():
 
 def display_templates():
     for key in templates:
-        description = f"{key:<3}: {templates[key]:<45}"
+        index = str(key)
         from_files = os.path.join(KRAK, templates[key])
         if os.path.isdir(from_files):
-            description += f"{key:<3}[Directory, add a dot (.) to copy 'deployed']"
+            index += "*"
+        description = f"{index:<3}: {templates[key]:<45}"
         print(description)
+    print("\n*: [is a directory: add a space and dot after the index (eg:'1 .') to copy 'deployed']")
     template, option = display_template_form()
     print(f"copy {template}...")
     if os.path.isdir(os.path.join(KRAK, template)) and option == ".":

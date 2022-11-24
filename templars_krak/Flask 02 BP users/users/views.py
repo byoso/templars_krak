@@ -6,7 +6,7 @@ from werkzeug.urls import url_parse
 from app import db
 from .forms import LoginForm, SignInForm
 from app import app
-from flask_login import current_user, login_user, logout_user, login_required
+from flask_login import current_user, login_user, logout_user
 from .models import User
 
 from . import users
